@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "NodeJS 18" // Optional if Allure is installed via npm
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -12,7 +8,7 @@ pipeline {
             }
         }
 
-        stage('Run Robot Tests + Allure Report') {
+        stage('Run Robot Tests with Allure') {
             steps {
                 powershell '''
                     Remove-Item -Path "allure-results\\*" -Force -ErrorAction SilentlyContinue
@@ -22,23 +18,14 @@ pipeline {
             }
         }
 
-        stage('Publish Allure Report') {
+        stage('Publish Report') {
             steps {
                 publishHTML(target: [
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
                     reportDir: 'allure-report',
                     reportFiles: 'index.html',
-                    reportName: 'Robot Framework Test Report'
+                    reportName: 'Robot Test Report'
                 ])
             }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: '**/allure-report/**/*.*', allowEmptyArchive: true
         }
     }
 }
