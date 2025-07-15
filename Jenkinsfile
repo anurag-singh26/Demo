@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Optional: If you need to define tools like Python or Allure CLI
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -16,14 +12,7 @@ pipeline {
             steps {
                 powershell '''
                     Remove-Item -Path "allure-results\\*" -Force -ErrorAction SilentlyContinue
-                    robot --listener allure_robotframework:allure-results/ *.robot
-                '''
-            }
-        }
-
-        stage('Generate Allure Report') {
-            steps {
-                powershell '''
+                    robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
                     allure generate allure-results --clean -o allure-report
                 '''
             }
@@ -34,8 +23,7 @@ pipeline {
                 publishHTML(target: [
                     reportDir: 'allure-report',
                     reportFiles: 'index.html',
-                    reportName: 'Allure Report',
-                    keepAll: true
+                    reportName: 'Robot Test Report'
                 ])
             }
         }
