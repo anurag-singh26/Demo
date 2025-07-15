@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        allure 'allure' // This name should match what you set in Global Tool Config
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,24 +12,23 @@ pipeline {
             }
         }
 
-        stage('Run Robot Tests with Allure') {
+        stage('Run Robot Tests') {
             steps {
                 powershell '''
                     Remove-Item -Path "allure-results\\*" -Force -ErrorAction SilentlyContinue
                     robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
-                    allure generate allure-results --clean -o allure-report
                 '''
             }
         }
+    }
 
-        stage('Publish Report') {
-            steps {
-                publishHTML(target: [
-                    reportDir: 'allure-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Robot Test Report'
-                ])
-            }
+    post {
+        always {
+            allure([
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'allure-results']]
+            ])
         }
     }
 }
