@@ -2,7 +2,14 @@ pipeline {
     agent any
 
     tools {
-        allure 'allure' // Name must match the one in Jenkins Global Tool Config
+        // Ensure these match your Jenkins Global Tool Configuration names
+        allure 'allure'           // Allure commandline installation
+        jdk 'jdk11'               // Add this to properly set JAVA_HOME for Allure
+    }
+
+    environment {
+        JAVA_HOME = "${tool 'jdk11'}"
+        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -16,13 +23,7 @@ pipeline {
             steps {
                 powershell '''
                     Remove-Item -Path "allure-results\\*" -Force -ErrorAction SilentlyContinue
-
-                    # Run Robot tests and capture exit code
                     robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
-                    $robotExitCode = $LASTEXITCODE
-
-                    # Prevent Jenkins from failing the build by forcing success exit code
-                    exit 0
                 '''
             }
         }
@@ -32,7 +33,7 @@ pipeline {
         always {
             allure([
                 includeProperties: false,
-                jdk: '',
+                jdk: 'jdk11', // Reference your configured JDK name
                 results: [[path: 'allure-results']]
             ])
         }
