@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Code already Checked out by Jenkins.'
+                echo 'Code Already Checked Out by Jenkins.'
             }
         }
 
