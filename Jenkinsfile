@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/anurag-singh26/Demo.git'
+                echo 'Code already checked out by Jenkins.'
             }
         }
 
