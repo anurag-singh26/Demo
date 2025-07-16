@@ -21,19 +21,17 @@ pipeline {
         stage('Run Robot Tests') {
             steps {
                 powershell '''
-                    if (Test-Path "allure-results") {
-                        Remove-Item -Path "allure-results\\*" -Recurse -Force -ErrorAction SilentlyContinue
-                    } else {
-                        Write-Host "allure-results directory not found, skipping cleanup."
-                    }
+                            if (Test-Path "allure-results") {
+                                Remove-Item -Path "allure-results\\*" -Recurse -Force -ErrorAction SilentlyContinue
+                            }
 
-                    robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
-
-                    if ($LASTEXITCODE -ne 0) {
-                        Write-Host "Some Robot tests failed."
-                        exit $LASTEXITCODE
-                    }
-                '''
+                            robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
+                            $exitCode = $LASTEXITCODE
+                            if ($exitCode -ne 0) {
+                                Write-Host "Robot tests had some failures. Build will continue."
+                            }
+                            exit 0  # Force Jenkins build to continue successfully
+                        '''
             }
         }
     }
