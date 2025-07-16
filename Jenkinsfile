@@ -22,7 +22,7 @@ pipeline {
         stage('Run Robot Tests') {
             steps {
                 powershell '''
-                    Remove-Item -Path "allure-results\\*" -Force -ErrorAction SilentlyContinue
+                    Remove-Item -Path "allure-results\\*" -Force
                     robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
                 '''
             }
