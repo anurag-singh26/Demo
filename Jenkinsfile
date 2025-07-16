@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     tools {
-        // Ensure these match your Jenkins Global Tool Configuration names
-        allure 'allure'           // Allure commandline installation
-        jdk 'jdk11'               // Add this to properly set JAVA_HOME for Allure
+        allure 'allure'
+        jdk 'jdk11'
     }
 
     environment {
@@ -22,13 +21,19 @@ pipeline {
         stage('Run Robot Tests') {
             steps {
                 powershell '''
-                            if (Test-Path "allure-results") {
-                                Remove-Item -Path "allure-results\\*" -Recurse -Force -ErrorAction SilentlyContinue
-                            } else {
-                                Write-Host "allure-results directory not found, skipping cleanup."
-                            }
-                            robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
-                        '''
+                    if (Test-Path "allure-results") {
+                        Remove-Item -Path "allure-results\\*" -Recurse -Force -ErrorAction SilentlyContinue
+                    } else {
+                        Write-Host "allure-results directory not found, skipping cleanup."
+                    }
+
+                    robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
+
+                    if ($LASTEXITCODE -ne 0) {
+                        Write-Host "Some Robot tests failed."
+                        exit $LASTEXITCODE
+                    }
+                '''
             }
         }
     }
@@ -37,7 +42,7 @@ pipeline {
         always {
             allure([
                 includeProperties: false,
-                jdk: 'jdk11', // Reference your configured JDK name
+                jdk: 'jdk11',
                 results: [[path: 'allure-results']]
             ])
         }
