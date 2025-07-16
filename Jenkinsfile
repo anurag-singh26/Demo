@@ -22,9 +22,13 @@ pipeline {
         stage('Run Robot Tests') {
             steps {
                 powershell '''
-                    Remove-Item -Path "allure-results\\*" -Force
-                    robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
-                '''
+                            if (Test-Path "allure-results") {
+                                Remove-Item -Path "allure-results\\*" -Recurse -Force -ErrorAction SilentlyContinue
+                            } else {
+                                Write-Host "allure-results directory not found, skipping cleanup."
+                            }
+                            robot --listener allure_robotframework:allure-results/ src/test/resources/TestCases/*.robot
+                        '''
             }
         }
     }
