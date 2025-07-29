@@ -4,7 +4,7 @@ pipeline {
     tools {
         allure 'allure'
         jdk 'jdk11'
-    }
+    } 
  
     environment {
         JAVA_HOME = "${tool 'jdk11'}"
