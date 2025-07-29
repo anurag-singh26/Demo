@@ -1,6 +1,6 @@
 pipeline {
     agent any
-
+ 
     tools {
         allure 'allure'
         jdk 'jdk11'
