@@ -5,7 +5,7 @@ pipeline {
         allure 'allure'
         jdk 'jdk11'
     }
-
+ 
     environment {
         JAVA_HOME = "${tool 'jdk11'}"
         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
